@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace local_greetings\form;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/formslib.php');
+
 /**
  * Plugin strings are defined here.
  *
@@ -22,12 +28,17 @@
  * @copyright   2025 Afif Ramadhan <ornixz@gmail.com>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class message_form extends \moodleform {
+    /**
+     * Define the form.
+     */
+    public function definition() {
+        $mform = $this->_form; // Don't forget the underscore!
 
-defined('MOODLE_INTERNAL') || die();
+        $mform->addElement('textarea', 'message', get_string('yourmessage', 'local_greetings')); // Add elements to your form.
+        $mform->setType('message', PARAM_TEXT); // Set type of element.
 
-$string['greetingloggedinuser'] = 'Greetings, {$a}.';
-$string['greetinguser'] = 'Greetings, user';
-$string['greetinguseres'] = 'Hola, {$a}';
-$string['greetingusernz'] = 'Kia Ora, {$a}.';
-$string['pluginname'] = 'Greetings';
-$string['yourmessage'] = 'Your Message';
+        $submitlabel = get_string('submit');
+        $mform->addElement('submit', 'submitmessage', $submitlabel);
+    }
+}
