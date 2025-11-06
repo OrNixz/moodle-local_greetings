@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>;.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Main file to view greetings
@@ -23,7 +23,8 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot. '/local/greetings/lib.php');
+require_login();
+require_once($CFG->dirroot . '/local/greetings/lib.php');
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -35,7 +36,7 @@ $PAGE->set_heading(get_string('pluginname', 'local_greetings'));
 echo $OUTPUT->header();
 
 if (isloggedin()) {
-    $usergreeting = local_greetings_get_greeting($USER); 
+    $usergreeting = local_greetings_get_greeting($USER);
 } else {
     $usergreeting = get_string('greetinguser', 'local_greetings');
 }

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>;.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Library file for local_greetings plugin
@@ -22,16 +22,13 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Pastikan file ini tidak diakses secara langsung
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Gets a greeting string based on the user's country.
  *
- * @param stdClass $user The user object (or null if not logged in)
+ * @package     local_greetings
+ * @param stdClass $user The user object
  * @return string The translated greeting string
  */
-
 function local_greetings_get_greeting($user) {
     if ($user == null) {
         return get_string('greetinguser', 'local_greetings');
@@ -48,4 +45,17 @@ function local_greetings_get_greeting($user) {
     }
 
     return get_string($langstr, 'local_greetings', fullname($user));
+}
+
+/**
+ * Insert a link to index.php on the site front page navigation menu.
+ *
+ * @param navigation_node $frontpage Node representing the front page in the navigation tree.
+ */
+function local_greetings_extend_navigation_frontpage(navigation_node $frontpage) {
+    $frontpage->add(
+        get_string('pluginname', 'local_greetings'),
+        new moodle_url('/local/greetings/index.php'),
+        navigation_node::TYPE_CUSTOM,
+    );
 }
