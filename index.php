@@ -32,7 +32,19 @@ $PAGE->set_url(new moodle_url('/local/greetings/index.php'));
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('pluginname', 'local_greetings'));
 $PAGE->set_heading(get_string('pluginname', 'local_greetings'));
+
 $messageform = new \local_greetings\form\message_form();
+if ($data = $messageform->get_data()) {
+    $message = required_param('message', PARAM_TEXT);
+
+    if (!empty($message)) {
+        $record = new stdClass();
+        $record->message = $message;
+        $record->timecreated = time();
+
+        $DB->insert_record('local_greetings_messages', $record);
+    }
+}
 
 echo $OUTPUT->header();
 
@@ -47,10 +59,11 @@ $templatedata = ['usergreeting' => $usergreeting];
 echo $OUTPUT->render_from_template('local_greetings/greeting_message', $templatedata);
 
 $messageform->display();
-if ($data = $messageform->get_data()) {
-    $message = required_param('message', PARAM_TEXT);
-
-    echo $OUTPUT->heading($message, 4);
+$messages = $DB->get_records('local_greetings_messages');
+$templatedata = ['messages' => array_values($messages)];
+echo $OUTPUT->render_from_template('local_greetings/messages', $templatedata);
+foreach ($messages as $m) {
+    echo '<p>' . $m->message . ', ' . $m->timecreated . '</p>';
 }
 
 echo $OUTPUT->footer();
