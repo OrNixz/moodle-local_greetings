@@ -34,18 +34,25 @@ $PAGE->set_heading(get_string('pluginname', 'local_greetings'));
 
 require_login();
 
+if (isguestuser()) {
+    throw new moodle_exception('noguest');
+}
+
 $allowpost = has_capability('local/greetings:postmessages', $context);
 $deleteanypost = has_capability('local/greetings:deleteanymessage', $context);
+$allowviewpost = has_capability('local/greetings:viewmessages', $context);
 
 $messageform = new \local_greetings\form\message_form();
+
 $action = optional_param('action', '', PARAM_TEXT);
 
 if ($action == 'del') {
-    require_capabiltiy('local/greetings:deleteanymessage', $context);
-
     $id = required_param('id', PARAM_INT);
 
-    $DB->delete_records('local_greetings_messages', ['id'] => $id);
+    if ($deleteanypost) {
+        // TODO: Confirm before deleting.
+        $DB->delete_records('local_greetings_messages', ['id' => $id]);
+    }
 }
 
 if ($data = $messageform->get_data()) {
@@ -54,7 +61,7 @@ if ($data = $messageform->get_data()) {
     $message = required_param('message', PARAM_TEXT);
 
     if (!empty($message)) {
-        $record = new stdClass();
+        $record = new stdClass;
         $record->message = $message;
         $record->timecreated = time();
         $record->userid = $USER->id;
@@ -62,7 +69,6 @@ if ($data = $messageform->get_data()) {
         $DB->insert_record('local_greetings_messages', $record);
     }
 }
-
 
 echo $OUTPUT->header();
 
@@ -79,20 +85,22 @@ if ($allowpost) {
     $messageform->display();
 }
 
-$userfields = \core_user\fields::for_name()->with_identity($context);
-$userfieldssql = $userfields->get_sql('u');
+if ($allowviewpost) {
+    $userfields = \core_user\fields::for_name()->with_identity($context);
+    $userfieldssql = $userfields->get_sql('u');
 
-$sql = "SELECT m.id, m.message, m.timecreated, m.userid {$userfieldssql->selects}
-          FROM {local_greetings_messages} m
-     LEFT JOIN {user} u ON u.id = m.userid
-      ORDER BY timecreated DESC";
+    $sql = "SELECT m.id, m.message, m.timecreated, m.userid {$userfieldssql->selects}
+            FROM {local_greetings_messages} m
+        LEFT JOIN {user} u ON u.id = m.userid
+        ORDER BY timecreated DESC";
 
-$messages = $DB->get_records_sql($sql);
+    $messages = $DB->get_records_sql($sql);
 
-$templatedata = [
-    'messages' => array_values($messages),
-    'candeleteany' => $deleteanypost,
-];
-echo $OUTPUT->render_from_template('local_greetings/messages', $templatedata);
+    $templatedata = [
+        'messages' => array_values($messages),
+        'candeleteany' => $deleteanypost,
+    ];
+    echo $OUTPUT->render_from_template('local_greetings/messages', $templatedata);
+}
 
 echo $OUTPUT->footer();

@@ -27,7 +27,7 @@ Example context (json):
 }}
 
 <div class="box py-3 card-columns">
-    {{#messages}}
+{{#messages}}
     <div class="card">
         <div class="card-body">
             <p class="card-text">{{message}}</p>
@@ -38,13 +38,13 @@ Example context (json):
                 </small>
             </p>
             {{#candeleteany}}
-            <p class="card-footer text-center">
-                <a href="{{config.wwwroot}}/local/greetings/index.php?action=del&id={{id}}">
-                    {{#pix}} t/delete {{/pix}}{{#str}} delete {{/str}}
-                </a>
-            </p>
+                <p class="card-footer text-center">
+                    <a href="{{config.wwwroot}}/local/greetings/index.php?action=del&id={{id}}">
+                        {{#pix}} t/delete {{/pix}}{{#str}} delete {{/str}}
+                    </a>
+                </p>
             {{/candeleteany}}
         </div>
     </div>
-    {{/messages}}
+{{/messages}}
 </div>
